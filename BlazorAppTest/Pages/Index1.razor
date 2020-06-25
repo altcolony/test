@@ -1,0 +1,31 @@
+﻿@page "/dhello"
+
+<p>@message</p>
+<button class="btn btn-primary" @onclick="@RotateMessage">
+    StartRotate
+</button>
+<button class="btn btn-primary" @onclick="@RotateToStop">
+    StopRotate
+</button>
+
+
+@code{
+    string message = "Another Hello World!";
+    bool active = false;
+    void RotateToStop()
+    {
+        active = false;
+    }
+    async void RotateMessage()
+    {
+        active = true;
+
+        for(; ; )
+        {
+            message = message.Substring(1) + message.Substring(0, 1);
+            this.StateHasChanged();
+            await Task.Delay(500);
+            if (!active) { break; }
+        }
+    }
+}

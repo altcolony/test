@@ -1,0 +1,156 @@
+﻿@page "/"
+
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+<p>現在時刻が0秒~29秒なら/Counterに飛びます。</p>
+<p>現在時刻が30秒~59秒なら/FetchDataに飛びます。</p>
+<button class="btn btn-primary" @onclick="@Jump">
+    Click to jump another Page
+</button>
+
+<a href="/Page1">GO TO PAGE1</a>
+
+@code{
+    void Jump()
+    {
+        var sec = DateTimeOffset.Now.Second;
+        if (sec >= 0 && sec <= 29)
+        {
+            UriHelper.NavigateTo("/Counter");
+        }
+        else
+        {
+            UriHelper.NavigateTo("/FetchData");
+        }
+    }
+}
+
+<p>@((MarkupString)userString)</p>
+
+@code{
+    string userString = "<span>user string</span>";
+}
+
+@if (modeSwitch)
+{
+    <p>Mode is ON!</p>
+}
+else
+{
+    <p>Mode is off.</p>
+}
+@switch (modeSwitch)
+{
+    case false:
+        <p>Mode is off.</p>
+        break;
+    case true:
+        <p>Mode is ON!</p>
+        break;
+
+}
+
+<button class="btn btn-primary" @onclick="@modeChange">Change Mode</button>
+
+@code{
+    bool modeSwitch = false;
+    void modeChange()
+    {
+        modeSwitch = !modeSwitch;
+    }
+}
+
+@for (int i = 0; i < 5; i++)
+{
+    <p>Count @i</p>
+}
+
+@foreach (var ch in "HELLO!")
+{
+    <p>character is @ch</p>
+}
+
+<a href="/gim">GO TO "/gim"</a>
+<a href="/betty">GO TO "/betty"</a>
+
+<ScaleText Size="1">Text1</ScaleText>
+<ScaleText Size="2">Text2</ScaleText>
+<ScaleText Size="3">Text3</ScaleText>
+<ScaleText Size="4">Text4</ScaleText>
+
+<input type="checkbox" @bind="@mySwitch"/>
+<input type="text"@bind="@myText"/>
+<p>@myText</p>
+
+@code{
+    private bool mySwitch = false;
+    private string myText = "REWRITE ME";
+}
+
+<input @bind="@myDate" @bind:format="yyyy-MM-dd"/>
+<p>@myDate</p>
+
+@code{
+    [Parameter]
+    public DateTime myDate { get; set; } = new DateTime(2020,1,1);
+}
+
+<p>@count</p>
+<button class="btn btn-primary"@onclick="@IncrementCount">
+    Click me
+</button>
+@code{
+    private int count;
+
+
+    void IncrementCount()
+    {
+        count++;
+    }
+    //falseを返すとき、Renderingを阻止する
+    protected override bool ShouldRender()
+    {
+        Console.WriteLine("ShouldRendercalled");
+        return count % 2 == 0;
+    }
+    //レンダリング後に呼ばれるイベント
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Console.Out.WriteLineAsync("OnAfterRenderAsync called");
+    }
+    //初期化のタイミングで発火するイベント
+    protected override async Task OnInitializedAsync()
+    {
+        await Console.Out.WriteLineAsync("OnInitializedAsync called");
+    }
+}
+
+<a href="/ppage">call ppage without param</a>
+
+<a href="/ppage/alpha">call ppage with alpha</a>
+
+<a href="/ppage/beta">call ppage with beta</a>
+
+<p>@siteName を応援してな。</p>
+@code{
+    [CascadingParameter(Name ="siteName")]
+    protected string siteName { get; set; }
+}
+
+
+@inject IJSRuntime JsRuntime;
+<button class="btn btn-primary"@onclick="@callJs">
+    Call JS
+</button>
+
+@code{
+    async void callJs()
+    {
+        var r = await JsRuntime.InvokeAsync<string>(
+            "myfunc",
+            "Hello from Blazor"
+            );
+        Console.WriteLine(r);
+    }
+}
+
+<button class="btn btn-primary"onclick="jsfunc();">Click me</button>
